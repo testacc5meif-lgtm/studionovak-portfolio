@@ -1,0 +1,11 @@
+[
+  {
+    "name": "Jelovnik app",
+    "tagline": "Daily meal schedule for students, delivered automatically",
+    "problem": "Students had to manually open and check a PDF meal schedule every day to find out what was being served.",
+    "solution": "A PWA that reads the PDF automatically with Tesseract OCR, stores the menu in Supabase Postgres and sends daily push notifications.",
+    "result": "Fully automated, nobody touches it. Runs on a completely free stack.",
+    "stack": ["Tesseract OCR", "Supabase", "Render", "Web Push"],
+    "link": "https://jelovnikucb.onrender.com"
+  }
+]

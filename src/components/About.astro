@@ -1,0 +1,171 @@
+---
+import { Picture } from 'astro:assets';
+import photo from '../assets/novak.jpg';
+import site from '../data/site.json';
+
+const principles = [
+  { title: 'Plain language', text: 'You explain the problem in your words. No tech jargon needed.' },
+  { title: 'Simplest thing that works', text: 'Small, focused tools that are easy to use and easy to maintain.' },
+  { title: 'Low running costs', text: 'Free or cheap hosting wherever possible, so it keeps paying off.' },
+];
+---
+
+<section class="section about" id="about">
+  <div class="container about-inner">
+    <figure class="photo" data-reveal>
+      <Picture
+        src={photo}
+        alt={`Portrait of ${site.name}`}
+        width={800}
+        widths={[360, 560, 800]}
+        sizes="(min-width: 960px) 400px, (min-width: 600px) 60vw, 90vw"
+        formats={['avif', 'webp']}
+        loading="lazy"
+        decoding="async"
+      />
+      <figcaption>
+        <span>{site.name}</span>
+        <span class="loc">📍 {site.location}</span>
+      </figcaption>
+    </figure>
+
+    <div class="about-copy" data-reveal>
+      <span class="eyebrow"><span class="num">03</span> About</span>
+      <h2>Hi, I'm Novak 👋</h2>
+      <div class="prose">
+        <p>
+          I'm a developer from {site.location} who likes turning annoying, repetitive work into something that
+          runs by itself. I build simple web apps and automations for small businesses: tools that solve one real
+          problem and quietly save time every single day.
+        </p>
+        <p>
+          I care more about whether something is actually useful than whether it uses the newest framework. If a
+          small script fixes it, you get a small script.
+        </p>
+      </div>
+
+      <ul class="principles">
+        {
+          principles.map((p) => (
+            <li>
+              <strong>{p.title}</strong>
+              <span>{p.text}</span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+</section>
+
+<style>
+  .about-inner {
+    display: grid;
+    gap: clamp(40px, 6vw, 80px);
+    align-items: center;
+  }
+
+  .photo {
+    position: relative;
+    margin: 0;
+    width: 100%;
+    max-width: 400px;
+    justify-self: center;
+  }
+
+  .photo::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-lg);
+    background: var(--accent);
+    transform: translate(14px, 14px);
+  }
+
+  .photo :global(img) {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    object-position: 50% 30%;
+    border-radius: var(--radius-lg);
+    background: var(--surface-2);
+  }
+
+  figcaption {
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    bottom: 14px;
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: color-mix(in srgb, var(--surface) 88%, transparent);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  .loc {
+    font-family: var(--font-mono);
+    font-weight: 400;
+    font-size: 0.78rem;
+    color: var(--muted);
+    align-self: center;
+  }
+
+  .about-copy h2 {
+    font-size: clamp(2rem, 4.6vw, 3.25rem);
+    margin-top: 16px;
+  }
+
+  .prose {
+    display: grid;
+    gap: 16px;
+    margin-top: 22px;
+    font-size: 1.125rem;
+    color: var(--muted);
+    max-width: 38rem;
+  }
+
+  .principles {
+    list-style: none;
+    margin: 32px 0 0;
+    padding: 0;
+    display: grid;
+    gap: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .principles li {
+    display: grid;
+    gap: 2px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .principles strong {
+    font-weight: 650;
+  }
+
+  .principles span {
+    color: var(--muted);
+    font-size: 0.975rem;
+  }
+
+  @media (min-width: 600px) {
+    .principles li {
+      grid-template-columns: 220px 1fr;
+      gap: 16px;
+    }
+  }
+
+  @media (min-width: 960px) {
+    .about-inner {
+      grid-template-columns: 400px 1fr;
+    }
+  }
+</style>
