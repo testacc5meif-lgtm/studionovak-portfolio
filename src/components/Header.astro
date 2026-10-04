@@ -20,7 +20,7 @@ const links = [
     </nav>
 
     <div class="header-actions">
-      <button class="theme-toggle" type="button" aria-label="Toggle dark mode" data-theme-toggle>
+      <button class="theme-toggle" type="button" aria-label="Dark mode" aria-pressed="false" data-theme-toggle>
         <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
           <circle cx="12" cy="12" r="4"></circle>
           <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
@@ -39,13 +39,14 @@ const links = [
   const root = document.documentElement;
   const sync = () => btn?.setAttribute('aria-pressed', String(root.dataset.theme === 'dark'));
   sync();
+  // The theme can also change from the OS setting (see Base.astro)
+  new MutationObserver(sync).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
   btn?.addEventListener('click', () => {
     const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
-    root.dataset.theme = next;
+    window.__setTheme(next);
     try {
       localStorage.setItem('theme', next);
     } catch {}
-    sync();
   });
 
   const header = document.querySelector('.header');

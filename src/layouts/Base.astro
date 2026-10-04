@@ -1,18 +1,36 @@
 ---
 import '../styles/global.css';
+import displayFont from '@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-wght-normal.woff2?url';
 import site from '../data/site.json';
 
 interface Props {
   title?: string;
   description?: string;
+  noindex?: boolean;
 }
 
 const {
-  title = `${site.name} — Simple web apps & automations`,
+  title = `${site.name} | Simple web apps & automations`,
   description = site.description,
+  noindex = false,
 } = Astro.props;
 
 const canonical = new URL(Astro.url.pathname, Astro.site);
+
+// Share card, rendered from the site's own fonts and photo (public/og.jpg)
+const ogImageUrl = new URL('/og.jpg', Astro.site);
+
+const personLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: site.name,
+  url: site.url,
+  jobTitle: 'Web developer',
+  description: site.description,
+  image: ogImageUrl.href,
+  address: { '@type': 'PostalAddress', addressCountry: 'RS' },
+  sameAs: [site.upwork],
+};
 ---
 
 <!doctype html>
@@ -22,29 +40,54 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex" />}
     <link rel="canonical" href={canonical} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <meta name="theme-color" content="#f3f0e8" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#11100d" media="(prefers-color-scheme: dark)" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#f3f0e8" />
+    <link rel="preload" href={displayFont} as="font" type="font/woff2" crossorigin />
 
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:site_name" content={site.brand} />
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${site.name}: I build simple web apps that save you time`} />
+    <meta name="twitter:card" content="summary_large_image" />
 
-    <!-- Set theme before first paint to avoid a flash -->
+    <script type="application/ld+json" set:html={JSON.stringify(personLd)} />
+
+    <!-- Set the theme before first paint so there is no flash of the wrong one -->
     <script is:inline>
       (function () {
         var d = document.documentElement;
+        var media = window.matchMedia('(prefers-color-scheme: dark)');
         d.classList.add('js');
-        var t = null;
-        try { t = localStorage.getItem('theme'); } catch (e) {}
-        if (t !== 'light' && t !== 'dark') {
-          t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+
+        function stored() {
+          try {
+            var t = localStorage.getItem('theme');
+            return t === 'light' || t === 'dark' ? t : null;
+          } catch (e) {
+            return null;
+          }
         }
-        d.setAttribute('data-theme', t);
+
+        window.__setTheme = function (t) {
+          d.setAttribute('data-theme', t);
+          var meta = document.querySelector('meta[name="theme-color"]');
+          if (meta) meta.setAttribute('content', t === 'dark' ? '#11100d' : '#f3f0e8');
+        };
+
+        window.__setTheme(stored() || (media.matches ? 'dark' : 'light'));
+
+        // Follow OS changes until the visitor picks a theme themselves
+        media.addEventListener('change', function (e) {
+          if (!stored()) window.__setTheme(e.matches ? 'dark' : 'light');
+        });
       })();
     </script>
   </head>

@@ -10,7 +10,7 @@ const principles = [
 ];
 ---
 
-<section class="section about" id="about">
+<section class="section about" id="about" aria-labelledby="about-title">
   <div class="container about-inner">
     <figure class="photo" data-reveal>
       <Picture
@@ -18,29 +18,29 @@ const principles = [
         alt={`Portrait of ${site.name}`}
         width={800}
         widths={[360, 560, 800]}
-        sizes="(min-width: 960px) 400px, (min-width: 600px) 60vw, 90vw"
+        sizes="(min-width: 440px) 400px, calc(100vw - 32px)"
         formats={['avif', 'webp']}
         loading="lazy"
         decoding="async"
       />
       <figcaption>
         <span>{site.name}</span>
-        <span class="loc">📍 {site.location}</span>
+        <span class="loc">Based in {site.location}</span>
       </figcaption>
     </figure>
 
     <div class="about-copy" data-reveal>
       <span class="eyebrow"><span class="num">03</span> About</span>
-      <h2>Hi, I'm Novak 👋</h2>
+      <h2 id="about-title">Nice to meet you <span class="wave" aria-hidden="true">👋</span></h2>
       <div class="prose">
         <p>
-          I'm a developer from {site.location} who likes turning annoying, repetitive work into something that
-          runs by itself. I build simple web apps and automations for small businesses: tools that solve one real
-          problem and quietly save time every single day.
+          I'm Novak, a developer who enjoys turning annoying, repetitive work into something that runs by itself. I
+          build simple web apps and automations for small businesses: tools that solve one real problem and quietly
+          save time every day.
         </p>
         <p>
-          I care more about whether something is actually useful than whether it uses the newest framework. If a
-          small script fixes it, you get a small script.
+          I care more about whether something is useful than whether it uses the newest framework. If a small
+          script fixes it, you get a small script, not a platform you have to learn.
         </p>
       </div>
 

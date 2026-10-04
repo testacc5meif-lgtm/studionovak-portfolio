@@ -1,42 +1,35 @@
 ---
-import projectsData from '../data/projects.json';
-
-interface Project {
-  name: string;
-  tagline?: string;
-  problem: string;
-  solution: string;
-  result: string;
-  stack: string[];
-  link?: string;
-}
-
-const projects = projectsData as Project[];
+import { projects } from '../data/projects';
 
 const host = (url: string) => new URL(url).host.replace(/^www\./, '');
 ---
 
-<section class="section work" id="work">
+<section class="section work" id="work" aria-labelledby="work-title">
   <div class="container">
     <div class="section-head" data-reveal>
       <span class="eyebrow"><span class="num">02</span> Selected work</span>
-      <h2>Real problems, solved for good</h2>
-      <p>Every project starts with something annoying and ends with it running on its own.</p>
+      <h2 id="work-title">Real problems, solved for good</h2>
+      <p>Each project starts with something tedious and ends with it handled automatically.</p>
     </div>
 
     <div class="projects">
       {
         projects.map((p, i) => (
-          <article class="project" data-reveal>
+          <article class="project" data-reveal aria-labelledby={`project-${i}`}>
             <header class="project-head">
               <div>
-                <span class="project-idx">{String(i + 1).padStart(2, '0')}</span>
-                <h3>{p.name}</h3>
+                <span class="project-idx" aria-hidden="true">
+                  {String(i + 1).padStart(2, '0')}
+                </span>
+                <h3 id={`project-${i}`}>{p.name}</h3>
                 {p.tagline && <p class="tagline">{p.tagline}</p>}
               </div>
               {p.link && (
                 <a class="visit" href={p.link} target="_blank" rel="noopener noreferrer">
-                  <span>{host(p.link)}</span>
+                  <span class="visit-text">
+                    <span class="sr-only">Visit {p.name} at </span>
+                    {host(p.link)}
+                  </span>
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <path d="M7 17L17 7M8 7h9v9" />
                   </svg>
@@ -47,31 +40,29 @@ const host = (url: string) => new URL(url).host.replace(/^www\./, '');
 
             <ol class="flow">
               <li class="step">
-                <span class="step-label">Problem</span>
+                <h4 class="step-label">Problem</h4>
                 <p>{p.problem}</p>
               </li>
-              <li class="arrow" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-              </li>
               <li class="step">
-                <span class="step-label">Solution</span>
+                <h4 class="step-label">Solution</h4>
                 <p>{p.solution}</p>
               </li>
-              <li class="arrow" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
-              </li>
               <li class="step step-result">
-                <span class="step-label">Result</span>
+                <h4 class="step-label">Result</h4>
                 <p>{p.result}</p>
               </li>
             </ol>
 
-            <footer class="project-foot">
-              <span class="stack-label">Stack</span>
-              <ul class="stack">
-                {p.stack.map((s) => <li>{s}</li>)}
-              </ul>
-            </footer>
+            {p.stack.length > 0 && (
+              <footer class="project-foot">
+                <h4 class="stack-label">Stack</h4>
+                <ul class="stack">
+                  {p.stack.map((s) => (
+                    <li>{s}</li>
+                  ))}
+                </ul>
+              </footer>
+            )}
           </article>
         ))
       }
@@ -80,7 +71,7 @@ const host = (url: string) => new URL(url).host.replace(/^www\./, '');
         <span class="next-plus" aria-hidden="true">+</span>
         <span>
           <strong>Your project could be next</strong>
-          <span class="next-sub">Tell me what eats up your time and I'll tell you if it can be automated.</span>
+          <span class="next-sub">Tell me what eats up your time and I'll tell you honestly whether it can be automated.</span>
         </span>
       </a>
     </div>
@@ -102,7 +93,7 @@ const host = (url: string) => new URL(url).host.replace(/^www\./, '');
     background: var(--surface);
     border: 1px solid var(--line);
     border-radius: var(--radius-lg);
-    padding: clamp(22px, 4vw, 40px);
+    padding: clamp(20px, 4vw, 40px);
     box-shadow: var(--shadow);
   }
 
@@ -118,7 +109,7 @@ const host = (url: string) => new URL(url).host.replace(/^www\./, '');
   .project-idx {
     font-family: var(--font-mono);
     font-size: 0.78rem;
-    color: var(--accent);
+    color: var(--accent-text);
   }
 
   h3 {
@@ -135,7 +126,7 @@ const host = (url: string) => new URL(url).host.replace(/^www\./, '');
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    height: 44px;
+    min-height: 44px;
     padding-inline: 18px;
     border: 1px solid var(--line);
     border-radius: 999px;
@@ -146,7 +137,7 @@ const host = (url: string) => new URL(url).host.replace(/^www\./, '');
     transition: border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease;
   }
 
-  .visit span:first-child {
+  .visit-text {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -169,13 +160,15 @@ const host = (url: string) => new URL(url).host.replace(/^www\./, '');
     transform: translate(2px, -2px);
   }
 
-  /* Problem → Solution → Result */
+  /* Problem → Solution → Result. Arrows are drawn in CSS so screen readers
+     hear a clean three-item list. */
   .flow {
+    --arrow-gap: 34px;
     list-style: none;
     margin: 0;
     padding: 0;
     display: grid;
-    gap: 6px;
+    gap: var(--arrow-gap);
   }
 
   .step {
@@ -186,15 +179,27 @@ const host = (url: string) => new URL(url).host.replace(/^www\./, '');
     background: var(--bg);
   }
 
+  .step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    width: var(--arrow-gap);
+    height: var(--arrow-gap);
+    background: var(--accent);
+    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 6v12M6 13l6 6 6-6'/%3E%3C/svg%3E")
+      center / 20px no-repeat;
+    transform: translateX(-50%);
+  }
+
   .step-label {
-    display: inline-block;
+    margin: 0 0 8px;
     font-family: var(--font-mono);
     font-size: 0.72rem;
     font-weight: 600;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--muted);
-    margin-bottom: 8px;
   }
 
   .step p {
@@ -207,23 +212,11 @@ const host = (url: string) => new URL(url).host.replace(/^www\./, '');
   }
 
   .step-result .step-label {
-    color: var(--accent);
+    color: var(--accent-text);
   }
 
   .step-result p {
     font-weight: 600;
-  }
-
-  .arrow {
-    display: grid;
-    place-items: center;
-    color: var(--accent);
-  }
-
-  .arrow svg {
-    width: 20px;
-    height: 20px;
-    transform: rotate(90deg);
   }
 
   .project-foot {
@@ -237,8 +230,10 @@ const host = (url: string) => new URL(url).host.replace(/^www\./, '');
   }
 
   .stack-label {
+    margin: 0;
     font-family: var(--font-mono);
     font-size: 0.72rem;
+    font-weight: 500;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--muted);
@@ -267,11 +262,11 @@ const host = (url: string) => new URL(url).host.replace(/^www\./, '');
     display: flex;
     align-items: center;
     gap: 20px;
-    padding: 24px clamp(22px, 4vw, 40px);
-    border: 1.5px dashed var(--line);
+    padding: 24px clamp(20px, 4vw, 40px);
+    border: 1.5px dashed color-mix(in srgb, var(--muted) 45%, transparent);
     border-radius: var(--radius-lg);
     text-decoration: none;
-    transition: border-color 0.2s ease, background-color 0.2s ease, opacity 0.7s ease, transform 0.7s ease;
+    transition: border-color 0.2s ease, background-color 0.2s ease;
   }
 
   .next:hover {
@@ -313,12 +308,13 @@ const host = (url: string) => new URL(url).host.replace(/^www\./, '');
 
   @media (min-width: 900px) {
     .flow {
-      grid-template-columns: 1fr 36px 1fr 36px 1fr;
-      gap: 0;
+      grid-template-columns: repeat(3, 1fr);
     }
 
-    .arrow svg {
-      transform: none;
+    .step:not(:last-child)::after {
+      left: 100%;
+      top: 50%;
+      transform: translateY(-50%) rotate(-90deg);
     }
   }
 </style>

@@ -11,6 +11,7 @@ npm install
 npm run dev       # http://localhost:4321 with hot reload
 npm run build     # production build into ./dist
 npm run preview   # serve ./dist locally
+npm run check     # type-check .astro/.ts files
 ```
 
 ## Editing content
@@ -23,6 +24,8 @@ npm run preview   # serve ./dist locally
 | Services cards | `src/components/Problems.astro` |
 | About text | `src/components/About.astro` |
 | Colors / fonts | `src/styles/global.css` (`:root` and `[data-theme='dark']`) |
+| Link preview image (1200×630) | `public/og.jpg` |
+| 404 page | `src/pages/404.astro` |
 
 ### Adding a project
 
@@ -41,6 +44,8 @@ Add an object to the array in `src/data/projects.json`:
 ```
 
 `tagline` and `link` are optional. Projects appear in the order they are listed.
+
+The file is validated at build time (`src/data/projects.ts`): a missing field, a misspelled key or an invalid URL stops the build with a message pointing at the problem.
 
 ## Deploying to Cloudflare Pages
 

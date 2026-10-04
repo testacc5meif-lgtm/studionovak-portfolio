@@ -34,18 +34,18 @@ const icons: Record<string, string> = {
 };
 ---
 
-<section class="section problems" id="services">
+<section class="section problems" id="services" aria-labelledby="services-title">
   <div class="container">
     <div class="section-head" data-reveal>
       <span class="eyebrow"><span class="num">01</span> Problems I solve</span>
-      <h2>Small fixes that give you hours back every week</h2>
-      <p>No giant platforms, no endless meetings. I find the boring, manual part of your day and replace it with something that just works.</p>
+      <h2 id="services-title">Small tools that give you hours back</h2>
+      <p>No giant platforms and no endless meetings. I find the boring, manual part of your week and replace it with something that just works.</p>
     </div>
 
     <ul class="cards">
       {
         problems.map((p, i) => (
-          <li class="card" data-reveal style={`transition-delay:${i * 70}ms`}>
+          <li class="card" data-reveal style={`--reveal-delay:${i * 70}ms`}>
             <div class="card-top">
               <span class="icon">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={icons[p.icon]} />
@@ -83,7 +83,7 @@ const icons: Record<string, string> = {
     background: var(--surface);
     border: 1px solid var(--line);
     border-radius: var(--radius-lg);
-    transition: border-color 0.25s ease, transform 0.25s ease, opacity 0.7s ease;
+    transition: border-color 0.25s ease;
   }
 
   .card:hover {
@@ -154,6 +154,10 @@ const icons: Record<string, string> = {
 
     .card {
       padding: 24px;
+    }
+
+    .card p {
+      font-size: 0.975rem;
     }
   }
 </style>

@@ -1,0 +1,46 @@
+---
+import Base from '../layouts/Base.astro';
+import site from '../data/site.json';
+---
+
+<Base title={`Page not found | ${site.brand}`} noindex>
+  <main class="nf container">
+    <p class="code" aria-hidden="true">404</p>
+    <h1>This page doesn't exist</h1>
+    <p class="text">The link might be old or mistyped. Everything I do is on the home page.</p>
+    <a href="/" class="btn btn-primary">
+      Back to the home page
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"></path></svg>
+    </a>
+  </main>
+</Base>
+
+<style>
+  .nf {
+    min-height: 100vh;
+    min-height: 100svh;
+    display: grid;
+    align-content: center;
+    justify-items: start;
+    gap: 20px;
+    padding-block: 64px;
+  }
+
+  .code {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--accent-text);
+  }
+
+  h1 {
+    font-size: clamp(2.4rem, 7vw, 4.5rem);
+    letter-spacing: -0.04em;
+  }
+
+  .text {
+    color: var(--muted);
+    font-size: 1.125rem;
+    max-width: 32rem;
+    margin-bottom: 12px;
+  }
+</style>

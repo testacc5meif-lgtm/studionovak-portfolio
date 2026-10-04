@@ -1,25 +1,27 @@
 ---
 import site from '../data/site.json';
+
+const mailto = `mailto:${site.email}?subject=${encodeURIComponent('Project inquiry')}`;
 ---
 
-<section class="section contact" id="contact">
+<section class="section contact" id="contact" aria-labelledby="contact-title">
   <div class="container">
     <div class="panel" data-reveal>
       <span class="eyebrow"><span class="num">04</span> Contact</span>
-      <h2>Got a task that eats up your time?</h2>
+      <h2 id="contact-title">Got a task that eats up your time?</h2>
       <p class="sub">
-        Send me a short message about what's slowing you down. I'll reply within a day or two with honest
-        thoughts on whether (and how) it can be fixed.
+        Send me a few lines about what's slowing you down: what you do today, how often, and which tools are
+        involved. I'll get back to you with an honest take on whether (and how) it can be fixed.
       </p>
 
       <div class="links">
         <div class="link-card">
-          <a class="link-main" href={`mailto:${site.email}`}>
+          <a class="link-main" href={mailto}>
             <span class="link-label">Email</span>
             <span class="link-value">{site.email}</span>
           </a>
-          <button type="button" class="copy" data-copy={site.email} aria-label="Copy email address">
-            <span class="copy-text">Copy</span>
+          <button type="button" class="copy" data-copy={site.email}>
+            Copy<span class="sr-only"> email address</span>
           </button>
         </div>
 
@@ -32,6 +34,7 @@ import site from '../data/site.json';
           <span class="sr-only">(opens in a new tab)</span>
         </a>
       </div>
+      <p class="sr-only" role="status" data-copy-status></p>
     </div>
   </div>
 </section>
@@ -44,18 +47,29 @@ import site from '../data/site.json';
 </footer>
 
 <script>
+  const status = document.querySelector<HTMLElement>('[data-copy-status]');
+
   document.querySelectorAll<HTMLButtonElement>('[data-copy]').forEach((btn) => {
+    const original = btn.innerHTML;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+
     btn.addEventListener('click', async () => {
-      const label = btn.querySelector('.copy-text');
+      const value = btn.dataset.copy ?? '';
+      let message: string;
       try {
-        await navigator.clipboard.writeText(btn.dataset.copy ?? '');
-        if (label) label.textContent = 'Copied!';
+        await navigator.clipboard.writeText(value);
+        btn.textContent = 'Copied!';
+        message = 'Email address copied to clipboard';
       } catch {
-        if (label) label.textContent = 'Press Ctrl+C';
+        btn.textContent = 'Copy failed';
+        message = `Could not copy. The email address is ${value}`;
       }
-      setTimeout(() => {
-        if (label) label.textContent = 'Copy';
-      }, 1800);
+      if (status) status.textContent = message;
+      clearTimeout(timer);
+      timer = setTimeout(() => {
+        btn.innerHTML = original;
+        if (status) status.textContent = '';
+      }, 2000);
     });
   });
 </script>
@@ -64,23 +78,29 @@ import site from '../data/site.json';
   .panel {
     position: relative;
     overflow: hidden;
-    padding: clamp(32px, 6vw, 72px);
+    padding: clamp(24px, 6vw, 72px);
     border-radius: calc(var(--radius-lg) + 6px);
     background: var(--ink);
     color: var(--bg);
+    /* The panel inverts the page colours, so small accent text needs the inverse shade */
+    --accent-text: var(--accent-text-on-ink);
+  }
+
+  .panel :focus-visible {
+    outline-color: currentColor;
   }
 
   .panel::after {
+    --size: clamp(240px, 32vw, 420px);
     content: '';
     position: absolute;
-    width: 420px;
-    height: 420px;
-    right: -140px;
-    top: -160px;
+    width: var(--size);
+    height: var(--size);
+    right: calc(var(--size) * -0.33);
+    top: calc(var(--size) * -0.38);
     border-radius: 50%;
     background: var(--accent);
     opacity: 0.9;
-    filter: blur(0);
     pointer-events: none;
   }
 
@@ -120,6 +140,7 @@ import site from '../data/site.json';
   .link-card {
     position: relative;
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 12px;
     padding: 18px 20px;
@@ -138,7 +159,9 @@ import site from '../data/site.json';
   .link-main {
     display: grid;
     gap: 2px;
-    flex: 1;
+    /* When the address no longer fits beside the Copy button, the button wraps
+       below instead of the address breaking mid-word */
+    flex: 1 1 auto;
     min-width: 0;
     text-decoration: none;
   }
@@ -146,6 +169,7 @@ import site from '../data/site.json';
   a.link-card.link-main {
     display: grid;
     grid-template-columns: 1fr auto;
+    align-content: center;
   }
 
   a.link-card .link-label,
@@ -171,7 +195,7 @@ import site from '../data/site.json';
     font-size: 0.72rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: color-mix(in srgb, var(--bg) 55%, transparent);
+    color: color-mix(in srgb, var(--bg) 68%, transparent);
   }
 
   .link-value {
@@ -182,7 +206,7 @@ import site from '../data/site.json';
 
   .copy {
     flex: none;
-    height: 38px;
+    height: 44px;
     padding-inline: 16px;
     border-radius: 999px;
     border: 1px solid color-mix(in srgb, var(--bg) 25%, transparent);
@@ -215,6 +239,9 @@ import site from '../data/site.json';
   }
 
   .footer a {
+    display: inline-block;
+    padding: 10px 0;
+    margin-block: -10px;
     text-decoration: none;
   }
 
@@ -225,15 +252,6 @@ import site from '../data/site.json';
   @media (min-width: 760px) {
     .links {
       grid-template-columns: 1fr 1fr;
-    }
-  }
-
-  @media (max-width: 600px) {
-    .panel::after {
-      width: 260px;
-      height: 260px;
-      right: -120px;
-      top: -120px;
     }
   }
 </style>
